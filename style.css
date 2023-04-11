@@ -1,0 +1,58 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+}
+#showGame {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    border: 1px solid black;
+}
+.player, .wall, .goal, .ball {
+    position: absolute;
+    margin: 0;
+}
+.wall {
+    background-color: white;
+    border: solid 1px red;
+}
+.ball {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: red;
+    transform: translate(-50%, -50%);
+    transition: transform 0.2s ease-out;
+}
+
+html, body {
+    font-family:monospace;
+}
+
+#log {
+    height:200px;
+    border:1px solid black;
+    overflow:auto;
+}
+
+#msg {
+    width: 330px;
+}
+
+div {
+    width:500px;
+    margin: 0px auto 0px auto;
+}
+
+#number {
+    width: 60px;
+    font-size: 115%;
+    text-align: center;
+    background: lightgreen;
+    padding: 5px;
+}
+
+canvas {
+    border: 1px solid #000;
+    margin: 0px auto 0px auto;
+}
