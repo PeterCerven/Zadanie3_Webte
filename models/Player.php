@@ -11,13 +11,38 @@ class Player
         private float  $y,
         private float  $width,
         private float  $height,
-        private float    $speed,
+        private float  $speed,
         private int    $lives,
         private string $color,
         private string $name,
-
+        private Side   $side,
+        private bool   $isYou,
     )
     {
+    }
+
+    /**
+     * @return bool
+     */
+    public function isYou(): bool
+    {
+        return $this->isYou;
+    }
+
+    /**
+     * @param bool $isYou
+     */
+    public function setIsYou(bool $isYou): void
+    {
+        $this->isYou = $isYou;
+    }
+
+    /**
+     * @return Side
+     */
+    public function getSide(): Side
+    {
+        return $this->side;
     }
 
 
@@ -147,6 +172,7 @@ class Player
             'lives' => $this->lives,
             'color' => $this->color,
             'name' => $this->name,
+            'isYou' => $this->isYou,
         ];
     }
 

@@ -56,12 +56,26 @@ class Ball
 
     public function setSpeedX(float $speedX): void
     {
-        $this->speedX = $speedX;
+        if ($speedX > 10) {
+            $this->speedX = 10;
+        }
+        else if ($speedX < -10) {
+            $this->speedX = -10;
+        } else {
+            $this->speedX = $speedX;
+        }
     }
 
     public function setSpeedY(float $speedY): void
     {
-        $this->speedY = $speedY;
+        if ($speedY > 10) {
+            $this->speedY = 10;
+        }
+        else if ($speedY < -10) {
+            $this->speedY = -10;
+        } else {
+            $this->speedY = $speedY;
+        }
     }
 
     public function move(): void
@@ -84,14 +98,14 @@ class Ball
 
     public function resetSpeed(): void
     {
-        $this->speedX = 5;
-        $this->speedY = 5;
+        $this->speedX = (mt_rand() / mt_getrandmax()) * 2 - 1;
+        $this->speedY = (mt_rand() / mt_getrandmax()) * 2 - 1;
     }
 
     public function resetPosition(): void
     {
-        $this->x = 400;
-        $this->y = 300;
+        $this->x = 250;
+        $this->y = 250;
     }
 
     public function draw() :string
@@ -117,14 +131,14 @@ class Ball
         $closestY = $this->clamp($ballY, $objectY, $objectY + $objectHeight);
 
         // Calculate the distance between the closest point and the ball's center
-        $distanceX = $ballX - $closestX;
-        $distanceY = $ballY - $closestY;
+        $distanceX = $ballX - ($closestX);
+        $distanceY = $ballY - ($closestY);
 
         // Calculate the squared distance
-        $squaredDistance = ($distanceX * $distanceX) + ($distanceY * $distanceY);
+        $squaredDistance = sqrt(($distanceX * $distanceX) + ($distanceY * $distanceY));
 
         // Check if the squared distance is less than or equal to the squared radius of the ball
-        return $squaredDistance <= ($ballRadius * $ballRadius);
+        return $squaredDistance <= ($ballRadius);
     }
 
     public function clamp($value, $min, $max): float{
@@ -142,6 +156,12 @@ class Ball
             'speedX' => $this->speedX,
             'speedY' => $this->speedY,
         ];
+    }
+
+    public function reset(): void
+    {
+        $this->resetPosition();
+        $this->resetSpeed();
     }
 
 

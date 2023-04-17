@@ -8,6 +8,8 @@ let players = [];
 let walls = [];
 let goals = [];
 
+let playerIndex;
+
 
 function Wall(x, y, width, height, color) {
     this.x = x;
@@ -103,7 +105,7 @@ function init(ballProperties, playersProperties, goalsProperties, wallsPropertie
         goals.push(new Goal(goalsProperties[i].x, goalsProperties[i].y, goalsProperties[i].width, goalsProperties[i].height, "black"));
     }
     for (let i = 0; i < wallsProperties.length; i++) {
-        walls.push(new Wall(wallsProperties[i].x, wallsProperties[i].y, wallsProperties[i].width, wallsProperties[i].height, "black"));
+        walls.push(new Wall(wallsProperties[i].x, wallsProperties[i].y, wallsProperties[i].width, wallsProperties[i].height, wallsProperties[i].color));
     }
     ball = new Ball(ballProperties.x, ballProperties.y, ballProperties.radius, "red");
 }
@@ -126,11 +128,15 @@ $(document).ready(function () {
     };
     ws.onmessage = function (e) {
         let data = JSON.parse(e.data);
-        if (ball == null) {
+        log(playerIndex);
+        if (data.players.length !== players.length) {
+            if (playerIndex === undefined) {
+                playerIndex = data.players.length - 1;
+                // log("Player index: " + playerIndex);
+            }
             init(data.ball, data.players, data.goals, data.walls);
-            return;
         }
-        log('< Received from server: ');
+        // log('< Received from server: ');
         ball.update(data.ball.x, data.ball.y);
         for (let i = 0; i < data.players.length; i++) {
             players[i].update(data.players[i].x, data.players[i].y);
@@ -160,10 +166,30 @@ $(document).ready(function () {
         $Msg.val("");
     }
 
-    $("#send").click(send);
-    $("#msg").on("keydown", function (event) {
-        if (event.keyCode == 13) send();
+    $(document).keydown(function(event) {
+        switch (event.key) {
+            case "ArrowUp":
+                log("ArrowUp");
+                ws.send(JSON.stringify(players));
+                break;
+            case "ArrowDown":
+                log("ArrowDown");
+                break;
+            case "ArrowLeft":
+                log("ArrowLeft");
+                // Code to execute when the left arrow key is pressed
+                break;
+            case "ArrowRight":
+                log("ArrowRight");
+                // Code to execute when the right arrow key is pressed
+                break;
+            default:
+                log("Other key");
+                // Code to execute for all other keys
+                break;
+        }
     });
+    $("#send").click(send);
     $("#quit").click(function () {
         log("Connection closed");
         ws.close();

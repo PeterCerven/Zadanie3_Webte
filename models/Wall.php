@@ -2,6 +2,8 @@
 
 namespace models;
 
+use Side;
+
 class Wall
 {
     private int $width;
@@ -10,10 +12,28 @@ class Wall
     public function __construct(
         private float $x,
         private float $y,
+        private Side $side,
+        private string $color,
     )
     {
         $this->width = 50;
         $this->height = 50;
+    }
+
+    /**
+     * @return Side
+     */
+    public function getSide(): Side
+    {
+        return $this->side;
+    }
+
+    /**
+     * @param Side $side
+     */
+    public function setSide(Side $side): void
+    {
+        $this->side = $side;
     }
 
     public function getX(): float
@@ -68,6 +88,7 @@ class Wall
             'y' => $this->y,
             'width' => $this->width,
             'height' => $this->height,
+            'color' => $this->color,
         ];
     }
 

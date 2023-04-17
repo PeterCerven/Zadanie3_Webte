@@ -13,10 +13,10 @@ enum Side
     public function playerAttributes(): PlayerAttributes
     {
         return match ($this) {
-            self::TOP => new PlayerAttributes('red', 200, 20, 100, 20, 'top'),
-            self::BOTTOM => new PlayerAttributes('blue', 200, 460, 100, 20, 'bottom'),
-            self::LEFT => new PlayerAttributes('green', 20, 200, 20, 100, 'left'),
-            self::RIGHT => new PlayerAttributes('yellow', 460, 200, 20, 100, 'right'),
+            self::TOP => new PlayerAttributes('red', 200, 20, 100, 20, 'top',Side::TOP, false),
+            self::BOTTOM => new PlayerAttributes('blue', 200, 460, 100, 20, 'bottom',Side::BOTTOM, false),
+            self::LEFT => new PlayerAttributes('green', 20, 200, 20, 100, 'left',Side::LEFT, false),
+            self::RIGHT => new PlayerAttributes('yellow', 460, 200, 20, 100, 'right',Side::RIGHT, false),
         };
     }
 

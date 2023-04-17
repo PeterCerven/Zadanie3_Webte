@@ -46,30 +46,24 @@ function updatePlayer($data): false|string
     return game();
 }
 
-// SSL context.
-$context = [
-    'ssl' => [
-        'local_cert' => '/home/xcervenp/webte_fei_stuba_sk.pem',
-        'local_pk' => '/home/xcervenp/webte.fei.stuba.sk.key',
-        'verify_peer' => false,
-    ]
-];
+
+
+
+
+
 
 // Create A Worker and Listens 9000 port, use Websocket protocol
-$ws_worker = new Worker("websocket://0.0.0.0:9000", $context);
+$ws_worker = new Worker("websocket://0.0.0.0:9000");
 
-// Enable SSL. WebSocket+SSL means that Secure WebSocket (wss://).
-// The similar approaches for Https etc.
-$ws_worker->transport = 'ssl';
 
 // 4 processes
-$ws_worker->count = 4;
+$ws_worker->count = 1;
 
 // Add a Timer to Every worker process when the worker process start
 $ws_worker->onWorkerStart = function ($ws_worker) {
     $GLOBALS['userdata'] = 0;
     // Timer every 5 seconds
-    Timer::add(0.01, function () use ($ws_worker) {
+    Timer::add(0.001, function () use ($ws_worker) {
         // Iterate over connections and send the time
         foreach ($ws_worker->connections as $connection) {
             $connection->send(updateBall());
@@ -102,4 +96,3 @@ $ws_worker->onWorkerStart = function ($ws_worker) {
 };
 // Run worker
 Worker::runAll();
-    

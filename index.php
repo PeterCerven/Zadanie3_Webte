@@ -19,7 +19,7 @@
 <body>
 <h1>Test</h1>
 <div>
-    <canvas id="canvas" width="500" height="500"></canvas>
+<canvas id="canvas" width="500" height="500"></canvas>
 </div>
 <div id="number">&nbsp;</div>
 <div id="log"></div>

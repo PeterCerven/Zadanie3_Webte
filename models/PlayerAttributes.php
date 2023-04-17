@@ -9,5 +9,7 @@ class PlayerAttributes
         public int $width,
         public int $height,
         public string $name,
+        public Side $side,
+        public bool $isYou,
     ) {}
 }
