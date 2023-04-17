@@ -2,7 +2,6 @@ let canvas = document.getElementById("canvas");
 let c = canvas.getContext("2d");
 
 
-
 let ball;
 let players = [];
 let walls = [];
@@ -166,26 +165,48 @@ $(document).ready(function () {
         $Msg.val("");
     }
 
-    $(document).keydown(function(event) {
+    $(document).keydown(function (event) {
+        let data;
+        event.preventDefault();
         switch (event.key) {
             case "ArrowUp":
+                data = {
+                    playerIndex: playerIndex,
+                    x: players[playerIndex].x,
+                    y: players[playerIndex].y - 10,
+                }
+                ws.send(JSON.stringify(data));
                 log("ArrowUp");
-                ws.send(JSON.stringify(players));
                 break;
             case "ArrowDown":
+                data = {
+                    playerIndex: playerIndex,
+                    x: players[playerIndex].x,
+                    y: players[playerIndex].y + 10,
+                }
+                ws.send(JSON.stringify(data));
                 log("ArrowDown");
                 break;
             case "ArrowLeft":
+                data = {
+                    playerIndex: playerIndex,
+                    x: players[playerIndex].x - 10,
+                    y: players[playerIndex].y,
+                }
+                ws.send(JSON.stringify(data));
                 log("ArrowLeft");
-                // Code to execute when the left arrow key is pressed
                 break;
             case "ArrowRight":
+                data = {
+                    playerIndex: playerIndex,
+                    x: players[playerIndex].x + 10,
+                    y: players[playerIndex].y,
+                }
+                ws.send(JSON.stringify(data));
                 log("ArrowRight");
-                // Code to execute when the right arrow key is pressed
                 break;
             default:
                 log("Other key");
-                // Code to execute for all other keys
                 break;
         }
     });

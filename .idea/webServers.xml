@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="a1966c80-55cf-46d2-a9f8-0b05a6762df9" name="my server">
+        <fileTransfer rootFolder="/var/www/site71.webte.fei.stuba.sk/Zadanie3_PingoPongo" accessType="SFTP" host="147.175.98.71" port="22" sshConfigId="8f7956c2-e2be-44d4-aec5-3b53e0b976ea" sshConfig="xcervenp@147.175.98.71:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

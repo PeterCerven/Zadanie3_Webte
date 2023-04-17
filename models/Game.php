@@ -164,6 +164,13 @@ class Game
         $this->checkCollision();
     }
 
+    public function updatePlayer($data) : void {
+        $assocArray = json_decode($data, true);
+        $player = $this->players[$assocArray['playerIndex']];
+        $player->setX($assocArray['x']);
+        $player->setY($assocArray['y']);
+    }
+
     public function toArray(): array
     {
         return [
