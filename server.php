@@ -24,10 +24,9 @@ require_once 'models/PlayerAttributes.php';
 require_once 'models/GoalAttributes.php';
 
 
-
-
-$num_players = 0;
-$game = new Game($num_players);
+$gameStarted = false;
+$active_players = 0;
+$game = new Game($active_players);
 
 function game(): false|string
 {
@@ -47,11 +46,6 @@ function updatePlayer($data): false|string
 }
 
 
-
-
-
-
-
 // Create A Worker and Listens 9000 port, use Websocket protocol
 $ws_worker = new Worker("websocket://0.0.0.0:9000");
 
@@ -59,39 +53,78 @@ $ws_worker = new Worker("websocket://0.0.0.0:9000");
 // 4 processes
 $ws_worker->count = 1;
 
-// Add a Timer to Every worker process when the worker process start
-$ws_worker->onWorkerStart = function ($ws_worker) {
-    $GLOBALS['userdata'] = 0;
-    // Timer every 5 seconds
-    Timer::add(0.001, function () use ($ws_worker) {
-        // Iterate over connections and send the time
-        foreach ($ws_worker->connections as $connection) {
-            $connection->send(updateBall());
+function timer(): void
+{
+    $GLOBALS['timer'] = Timer::add(0.01, function () {
+        $ballData = updateBall();
+        foreach ($GLOBALS['ws_worker']->connections as $connection) {
+            $connection->send($ballData);
         }
     });
+}
+
+// Add a Timer to Every worker process when the worker process start
+$ws_worker->onWorkerStart = function ($ws_worker) {
+
+    $ws_worker->onMessage = function ($connection, $data) {
+        $data = json_decode($data, true);
+        switch ($data['message']) {
+            case 'start':
+                $GLOBALS['gameStarted'] = true;
+                $GLOBALS['game']->setGameStarted(true);
+                foreach ($GLOBALS['ws_worker']->connections as $connection) {
+                    $connection->send(game());
+                }
+                timer();
+                break;
+            case 'stop':
+                $GLOBALS['gameStarted'] = false;
+                $GLOBALS['active_players'] = 0;
+                $GLOBALS['game'] = new Game($GLOBALS['active_players']);
+                foreach ($GLOBALS['ws_worker']->connections as $connection) {
+                    $connection->send(game());
+                }
+                foreach ($GLOBALS['ws_worker']->connections as $connection) {
+                    $connection->send(json_encode(['message' => 'reset']));
+                }
+                Timer::del($GLOBALS['timer']);
+                break;
+            case 'join':
+                $GLOBALS['active_players']++;
+                $GLOBALS['game'] = new Game($GLOBALS['active_players']);
+                $side = $GLOBALS['game']->getLastPlayer()->getSide();
+                foreach ($GLOBALS['ws_worker']->connections as $connection2) {
+                    $connection2->send(game());
+                }
+                $connection->send(json_encode(['message' => 'player', 'side' => $side]));
+
+                break;
+            case 'reset':
+                $GLOBALS['gameStarted'] = false;
+                $GLOBALS['game'] = new Game($GLOBALS['active_players']);
+                break;
+            case 'update':
+                foreach ($GLOBALS['ws_worker']->connections as $connection) {
+                    $connection->send(updatePlayer($data));
+                }
+                break;
+        }
+    };
 
 
     // Emitted when new connection come
     $ws_worker->onConnect = function ($connection) {
-        $GLOBALS['num_players']++;
-        $GLOBALS['game'] = new Game($GLOBALS['num_players']);
         // Emitted when websocket handshake done
         $connection->onWebSocketConnect = function ($connection) {
             $connection->send(game());
         };
     };
 
-    $ws_worker->onMessage = function ($connection, $data) {
-        $GLOBALS['userdata'] = $data;
-        // Send hello $data
-        $connection->send(updatePlayer($data));
-    };
-
     // Emitted when connection closed
     $ws_worker->onClose = function ($connection) {
-        $GLOBALS['num_players']--;
-        $GLOBALS['game'] = new Game($GLOBALS['num_players']);
-        $connection->send(game());
+//        $GLOBALS['num_players']--;
+//        $GLOBALS['game'] = new Game($GLOBALS['num_players']);
+//        $connection->send(game());
     };
 };
 // Run worker

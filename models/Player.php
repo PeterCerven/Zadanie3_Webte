@@ -6,12 +6,15 @@ use Side;
 
 class Player
 {
+    private int $upperBound;
+    private int $lowerBound;
+    private bool $alive;
+
     public function __construct(
         private float  $x,
         private float  $y,
         private float  $width,
         private float  $height,
-        private float  $speed,
         private int    $lives,
         private string $color,
         private string $name,
@@ -19,6 +22,42 @@ class Player
         private bool   $isYou,
     )
     {
+        $this->upperBound = 350;
+        $this->lowerBound = 150;
+        $this->alive = false;
+    }
+
+
+    /**
+     * @return int
+     */
+    public function getUpperBound(): int
+    {
+        return $this->upperBound;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAlive(): bool
+    {
+        return $this->alive;
+    }
+
+    /**
+     * @param bool $alive
+     */
+    public function setAlive(bool $alive): void
+    {
+        $this->alive = $alive;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLowerBound(): int
+    {
+        return $this->lowerBound;
     }
 
     /**
@@ -66,10 +105,6 @@ class Player
         return $this->height;
     }
 
-    public function getSpeed(): float
-    {
-        return $this->speed;
-    }
 
     public function getLives(): int
     {
@@ -88,11 +123,25 @@ class Player
 
     public function setX(float $x): void
     {
+        if ($this->side == Side::BOTTOM || $this->side == Side::TOP) {
+            if ($x < $this->lowerBound) {
+                $x = $this->lowerBound;
+            } elseif ($x > $this->upperBound) {
+                $x = $this->upperBound;
+            }
+        }
         $this->x = $x;
     }
 
     public function setY(float $y): void
     {
+        if ($this->side == Side::LEFT || $this->side == Side::RIGHT) {
+            if ($y < $this->lowerBound) {
+                $y = $this->lowerBound;
+            } elseif ($y > $this->upperBound) {
+                $y = $this->upperBound;
+            }
+        }
         $this->y = $y;
     }
 
@@ -106,10 +155,6 @@ class Player
         $this->height = $height;
     }
 
-    public function setSpeed(float $speed): void
-    {
-        $this->speed = $speed;
-    }
 
     public function setLives(int $lives): void
     {
@@ -126,26 +171,6 @@ class Player
         $this->name = $name;
     }
 
-    public function moveUp(): void
-    {
-        $this->y -= $this->speed;
-    }
-
-    public function moveDown(): void
-    {
-        $this->y += $this->speed;
-    }
-
-    public function moveLeft(): void
-    {
-        $this->x -= $this->speed;
-    }
-
-    public function moveRight(): void
-    {
-        $this->x += $this->speed;
-    }
-
     public function loseLife(): void
     {
         $this->lives--;
@@ -156,10 +181,6 @@ class Player
         return $this->lives <= 0;
     }
 
-    public function draw(): string
-    {
-        return sprintf('<div class="player" style="left: %dpx; top: %dpx; width: %dpx; height: %dpx; background-color: %s;"></div>', $this->x, $this->y, $this->width, $this->height, $this->color);
-    }
 
     public function toArray(): array
     {
@@ -168,11 +189,12 @@ class Player
             'y' => $this->y,
             'width' => $this->width,
             'height' => $this->height,
-            'speed' => $this->speed,
             'lives' => $this->lives,
             'color' => $this->color,
             'name' => $this->name,
             'isYou' => $this->isYou,
+            'side' => $this->side->name,
+            'alive' => $this->alive,
         ];
     }
 

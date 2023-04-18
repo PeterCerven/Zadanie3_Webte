@@ -69,10 +69,6 @@ class Goal
     }
 
 
-    public function draw() : string
-    {
-        return "<div class='goal' style='position: absolute; left: {$this->x}px; top: {$this->y}px; width: {$this->width}px; height: {$this->height}px; background-color: #000000;'></div>";
-    }
 
     public function toArray(): array
     {
@@ -81,6 +77,7 @@ class Goal
             'y' => $this->y,
             'width' => $this->width,
             'height' => $this->height,
+            'player' => $this->player->isAlive(),
         ];
     }
 }
