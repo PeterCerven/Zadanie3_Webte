@@ -28,6 +28,9 @@ $gameStarted = false;
 $active_players = 0;
 $game = new Game($active_players);
 
+
+
+
 function game(): false|string
 {
     return $GLOBALS['game']->sentData();
@@ -35,7 +38,9 @@ function game(): false|string
 
 function newGame() : false|string
 {
-    Timer::del($GLOBALS['timer']);
+    if ($GLOBALS['gameStarted']) {
+        Timer::del($GLOBALS['timer']);
+    }
     $GLOBALS['gameStarted'] = false;
     $GLOBALS['active_players'] = 0;
     $GLOBALS['game'] = new Game($GLOBALS['active_players']);
@@ -76,7 +81,7 @@ function timer(): void
     });
 }
 
-// Add a Timer to Every worker process when the worker process start
+
 $ws_worker->onWorkerStart = function ($ws_worker) {
     $ws_worker->onMessage = function ($connection, $data) {
         $data = json_decode($data, true);
@@ -106,14 +111,14 @@ $ws_worker->onWorkerStart = function ($ws_worker) {
                 break;
             case 'join':
                 $GLOBALS['active_players']++;
-                $GLOBALS['game'] = new Game($GLOBALS['active_players']);
-                $GLOBALS['game']->getLastPlayer()->setNickname($data['name']);
+                $GLOBALS['game']->addNewPlayer($data['name']);
                 $side = $GLOBALS['game']->getLastPlayer()->getSide();
                 foreach ($GLOBALS['ws_worker']->connections as $connection2) {
                     $connection2->send(game());
                 }
                 $admin = false;
                 if ($GLOBALS['active_players'] === 1) {
+                    $GLOBALS['game']->passAdmin();
                     $admin = true;
                 }
                 $connection->send(json_encode(['message' => 'player', 'side' => $side, 'isAdmin' => $admin, 'plName' => $data['name']]));
@@ -126,17 +131,24 @@ $ws_worker->onWorkerStart = function ($ws_worker) {
             case 'rageQuit':
                 $GLOBALS['active_players']--;
                 $side = $data['playerSide'];
-                $GLOBALS['game']->getPlayer($side)->setAlive(false);
+                $GLOBALS['game']->getPlayerWithSide($side)->setAlive(false);
                 $GLOBALS['game']->wallPlayer();
+
+                if (($data['admin'])) {
+                    $GLOBALS['game']->getPlayerWithSide($side)->setAdmin(false);
+                    $GLOBALS['game']->passAdmin();
+                }
+
                 if ($GLOBALS['game']->isGameOver()) {
-                    foreach ($GLOBALS['ws_worker']->connections as $connection) {
-                        $connection->send(newGame());
+                    foreach ($GLOBALS['ws_worker']->connections as $connection2) {
+                        $connection2->send(newGame());
                     }
                 } else {
-                    foreach ($GLOBALS['ws_worker']->connections as $connection) {
-                        $connection->send(game());
+                    foreach ($GLOBALS['ws_worker']->connections as $connection3) {
+                        $connection3->send(game());
                     }
                 }
+                $connection->send(json_encode(['message' => 'join']));
                 break;
             case 'update':
                 foreach ($GLOBALS['ws_worker']->connections as $connection) {

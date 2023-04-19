@@ -7,8 +7,8 @@ let players = [];
 let walls = [];
 let goals = [];
 let admin = false;
-let myName;
 let playerSide;
+$("#start").prop("disabled", true);
 
 const playerArray = document.querySelectorAll('.player');
 
@@ -137,12 +137,21 @@ function init(ballProperties, playersProperties, goalsProperties, wallsPropertie
     players = [];
     walls = [];
     goals = [];
+    let alive = 0;
     for (let i = 0; i < playersProperties.length; i++) {
         players.push(new Player(playersProperties[i].x, playersProperties[i].y, playersProperties[i].width,
             playersProperties[i].height, playersProperties[i].color, playersProperties[i].lives, playersProperties[i].side,
             playersProperties[i].alive));
-        console.log(playersProperties[i].side, playersProperties[i].nickName);
         assignName(playersProperties[i].side, playersProperties[i].nickName);
+        if (playersProperties[i].alive) {
+            alive++;
+        }
+    }
+    if (alive === 0) {
+        admin = false;
+        playerSide = undefined;
+        $('#admin').text('No');
+        $("#start").prop("disabled", true);
     }
     for (let i = 0; i < goalsProperties.length; i++) {
         goals.push(new Goal(goalsProperties[i].x, goalsProperties[i].y, goalsProperties[i].width, goalsProperties[i].height, "black", goalsProperties[i].player));
@@ -164,16 +173,17 @@ function updateScene() {
 $(document).ready(function () {
     let ws = new WebSocket("ws://localhost:9000");
     ws.onopen = function (e) {
-        log("Connection established");
+        console.log("Connection established");
     };
     ws.onerror = function (error) {
-        log("Unknown WebSocket Error " + JSON.stringify(error));
+        console.log("Unknown WebSocket Error " + JSON.stringify(error));
     };
     ws.onmessage = function (e) {
         let data = JSON.parse(e.data);
         if (data.message === "reset") {
             playerSide = undefined;
             $("#join").prop("disabled", false);
+            $('#admin').text('No');
             playerArray.forEach(player => {
                 const nameElement = player.querySelector('.name');
                 nameElement.textContent = 'Free';
@@ -183,7 +193,18 @@ $(document).ready(function () {
         if (data.message === "player") {
             playerSide = data.side;
             admin = data.isAdmin;
-            myName = data.plName;
+            if (admin) {
+                $('#admin').text('Yes');
+                $("#start").prop("disabled", false);
+            } else {
+                $('#admin').text('No');
+                $("#start").prop("disabled", true);
+            }
+            return;
+        }
+        if (data.message === "join") {
+            $("#join").prop("disabled", false);
+            $('#admin').text('No');
             return;
         }
         init(data.ball, data.players, data.goals, data.walls);
@@ -197,26 +218,11 @@ $(document).ready(function () {
         updateScene();
     };
     ws.onclose = function () {
-        log("Connection closed - Either the host or the client has lost connection");
-    }
-
-    function log(m) {
-        $("#log").append(m + "<br />");
     }
 
 
-    function send() {
-        $Msg = $("#msg");
-        if ($Msg.val() == "") return alert("Textarea is empty");
 
-        try {
-            ws.send($Msg.val());
-            log('> Sent to server:' + $Msg.val());
-        } catch (exception) {
-            log(exception);
-        }
-        $Msg.val("");
-    }
+
 
     $('#start').click(function () {
         ws.send(JSON.stringify({message: "start", admin: admin}));
@@ -227,7 +233,7 @@ $(document).ready(function () {
     });
 
     $('#rageQuit').click(function () {
-        ws.send(JSON.stringify({message: "rageQuit", playerSide: playerSide}));
+        ws.send(JSON.stringify({message: "rageQuit", playerSide: playerSide, admin: admin}));
     });
 
     $('#join').click(function () {
@@ -291,9 +297,8 @@ $(document).ready(function () {
             }
         }
     });
-    $("#send").click(send);
     $("#quit").click(function () {
-        log("Connection closed");
+        console.log("Connection closed");
         ws.close();
         ws = null;
     });

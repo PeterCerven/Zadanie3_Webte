@@ -86,8 +86,8 @@ class Ball
 
     public function increaseSpeed(): void
     {
-        $this->speedX *= 1.1;
-        $this->speedY *= 1.1;
+        $this->speedX *= 1.2;
+        $this->speedY *= 1.2;
     }
 
     public function decreaseSpeed(): void
@@ -98,8 +98,8 @@ class Ball
 
     public function resetSpeed(): void
     {
-        $this->speedX = (mt_rand() / mt_getrandmax()) * 2 - 1;
-        $this->speedY = (mt_rand() / mt_getrandmax()) * 2 - 1;
+        $this->speedX = rand(-5, 5);
+        $this->speedY = rand(-5, 5);
     }
 
     public function resetPosition(): void

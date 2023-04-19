@@ -10,6 +10,7 @@ class Player
     private int $lowerBound;
     private bool $alive;
     private string $nickName;
+    private bool $admin;
 
     public function __construct(
         private float  $x,
@@ -27,6 +28,23 @@ class Player
         $this->lowerBound = 150;
         $this->alive = false;
         $this->nickName = "FREE";
+        $this->admin = false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @param bool $admin
+     */
+    public function setAdmin(bool $admin): void
+    {
+        $this->admin = $admin;
     }
 
 
@@ -52,6 +70,9 @@ class Player
     public function setAlive(bool $alive): void
     {
         $this->alive = $alive;
+        if (!$alive) {
+            $this->nickName = "FREE";
+        }
     }
 
     /**
@@ -215,6 +236,7 @@ class Player
             'side' => $this->side->name,
             'alive' => $this->alive,
             'nickName' => $this->nickName,
+            'admin' => $this->admin,
         ];
     }
 

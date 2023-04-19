@@ -19,56 +19,43 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
-
 <body>
-<h1>Test</h1>
 <div class="container">
     <div class="row">
         <div class="col">
             <canvas id="canvas" width="600" height="600"></canvas>
         </div>
         <div class="col">
-            <div class="row">
-                <div class="col">
-                    <button id="start">Start Game</button>
+            <h2 class="text-center mb-4">Game Menu</h2>
+            <div class="d-grid gap-2">
+                <button id="start" class="btn btn-primary">Start Game</button>
+                <button id="stop" class="btn btn-warning">Restart</button>
+                <button id="rageQuit" class="btn btn-danger">Rage quit</button>
+                <div class="input-group mb-3">
+                    <button id="join" class="btn btn-info">Join</button>
+                    <input id="player" type="text" class="form-control" placeholder="Player" aria-label="Player">
                 </div>
             </div>
-            <div class="row">
-                <div class="col">
-                    <button id="stop">Stop Game</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <button id="rageQuit">Rage quit</button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <label for="player">Join</label>
-                    <input id="player" type="text" value="player"/>
-                    <button id="join">Join</button>
-                </div>
-            </div>
+            <h4 class="mt-4"><span id="score">0</span></h4>
             <div class="row">
                 <div class="col myBack">
                     <div class="player">
-                        <div class="rect green"></div>
+                        <div class="rect green me-2"></div>
                         <span>LEFT: </span>
                         <div class="name">Free</div>
                     </div>
                     <div class="player">
-                        <div class="rect yellow"></div>
+                        <div class="rect yellow me-2"></div>
                         <span>RIGHT: </span>
                         <div class="name">Free</div>
                     </div>
                     <div class="player">
-                        <div class="rect red"></div>
+                        <div class="rect red me-2"></div>
                         <span>TOP: </span>
                         <div class="name">Free</div>
                     </div>
                     <div class="player">
-                        <div class="rect blue"></div>
+                        <div class="rect blue me-2"></div>
                         <span>BOTTOM: </span>
                         <div class="name">Free</div>
                     </div>
@@ -76,17 +63,13 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <div id="score">Score: 0</div>
+                    <h4 class="mt-4">Admin: <span id="admin">No</span></h4>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <div class="container">
-    <div id="number">&nbsp;</div>
-    <div id="log"></div>
-    <input id="msg" type="text"/>
-    <button id="send">Send</button>
     <button id="quit">Quit</button>
 </div>
 

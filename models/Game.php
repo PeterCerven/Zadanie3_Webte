@@ -50,7 +50,7 @@ class Game
     {
         $speedX = rand(-5, 5);
         $speedY = rand(-5, 5);
-        $this->ball = new Ball(300, 300, 15, $speedX, $speedY);
+        $this->ball = new Ball(300, 300, 14, $speedX, $speedY);
         $this->createDefaultWalls();
         $pa = [Side::LEFT->playerAttributes(), Side::RIGHT->playerAttributes(), Side::TOP->playerAttributes(), Side::BOTTOM->playerAttributes()];
         $ga = [Side::LEFT->goalAttributes(), Side::RIGHT->goalAttributes(), Side::TOP->goalAttributes(), Side::BOTTOM->goalAttributes()];
@@ -64,6 +64,18 @@ class Game
             $this->goals[] = new Goal($ga[$i]->x, $ga[$i]->y, $ga[$i]->width, $ga[$i]->height, $player);
         }
         $this->wallPlayer();
+    }
+
+    public function addNewPlayer($name): void
+    {
+        for ($i = 0; $i < 4; $i++) {
+            if (!$this->players[$i]->isAlive()) {
+                $this->players[$i]->setAlive(true);
+                $this->players[$i]->setNickName($name);
+                $this->wallPlayer();
+                break;
+            }
+        }
     }
 
     /**
@@ -102,7 +114,8 @@ class Game
         $this->walls[] = new Wall(450, 500, Side::BOTTOM, "black");
     }
 
-    public function wallPlayer() : void {
+    public function wallPlayer(): void
+    {
         $this->walls = [];
         foreach ($this->players as $player) {
             if (!$player->isAlive()) {
@@ -151,39 +164,59 @@ class Game
 
     private function checkBounce(mixed $objects): void
     {
+
         foreach ($objects as $object) {
             if ($this->ball->checkCollision($object)) {
                 $this->ball->increaseSpeed();
                 $this->score++;
-                switch ($object->getSide()) {
-                    case Side::BOTTOM:
-                        $this->ball->setY($object->getY() - $this->ball->getRadius() - 1);
-                        $this->ball->setSpeedY(-$this->ball->getSpeedY());
-                        break;
-                    case Side::TOP:
-                        $this->ball->setY($object->getY() + $object->getHeight() + $this->ball->getRadius() + 1);
-                        $this->ball->setSpeedY(-$this->ball->getSpeedY());
-                        break;
-                    case Side::RIGHT:
-                        $this->ball->setX($object->getX() - $this->ball->getRadius() - 1);
-                        $this->ball->setSpeedX(-$this->ball->getSpeedX());
-                        break;
-                    case Side::LEFT:
-                        $this->ball->setX($object->getX() + $object->getWidth() + $this->ball->getRadius() + 1);
-                        $this->ball->setSpeedX(-$this->ball->getSpeedX());
-                        break;
+                $left = $object->getX();
+                $right = $object->getX() + $object->getWidth();
+                $top = $object->getY();
+                $bottom = $object->getY() + $object->getHeight();
+                // bottom
+                if ($this->ball->getY() + $this->ball->getRadius() >= $top && $this->ball->getY() - $this->ball->getRadius() <= $top
+                    && $this->ball->getX() + ($this->ball->getRadius() / 2) >= $left && $this->ball->getX() - ($this->ball->getRadius() / 2) <= $right) {
+                    $this->ball->setY($object->getY() - $this->ball->getRadius() - 1);
+                    $this->ball->setSpeedY(-$this->ball->getSpeedY());
+                    // top
+                } else if ($this->ball->getY() - $this->ball->getRadius() <= $bottom && $this->ball->getY() + $this->ball->getRadius() >= $bottom
+                    && $this->ball->getX() + ($this->ball->getRadius() / 2) >= $left && $this->ball->getX() - ($this->ball->getRadius() / 2) <= $right) {
+                    $this->ball->setY($object->getY() + $object->getHeight() + $this->ball->getRadius() + 1);
+                    $this->ball->setSpeedY(-$this->ball->getSpeedY());
+                    //right
+                } else if ($this->ball->getX() + $this->ball->getRadius() >= $left && $this->ball->getX() - $this->ball->getRadius() <= $left
+                    && $this->ball->getY() + ($this->ball->getRadius() / 2) >= $top && $this->ball->getY() - ($this->ball->getRadius() / 2) <= $bottom) {
+                    $this->ball->setX($object->getX() - $this->ball->getRadius() - 1);
+                    $this->ball->setSpeedX(-$this->ball->getSpeedX());
+                    //left
+                } else if ($this->ball->getX() - $this->ball->getRadius() <= $right && $this->ball->getX() + $this->ball->getRadius() >= $right
+                    && $this->ball->getY() + ($this->ball->getRadius() / 2) >= $top && $this->ball->getY() - ($this->ball->getRadius() / 2) <= $bottom) {
+                    $this->ball->setX($object->getX() + $object->getWidth() + $this->ball->getRadius() + 1);
+                    $this->ball->setSpeedX(-$this->ball->getSpeedX());
                 }
             }
         }
+
     }
 
-    private function isAnyoneAlive() : bool {
+    private function isAnyoneAlive(): bool
+    {
         foreach ($this->players as $player) {
             if ($player->isAlive()) {
                 return true;
             }
         }
         return false;
+    }
+
+    public function passAdmin(): void
+    {
+        foreach ($this->players as $player) {
+            if ($player->isAlive()) {
+                $player->setAdmin(true);
+                return;
+            }
+        }
     }
 
     private function checkCollision(): void
@@ -208,11 +241,10 @@ class Game
 
     }
 
-    public function isGameOver() : bool {
+    public function isGameOver(): bool
+    {
         return !$this->isAnyoneAlive();
     }
-
-
 
 
     public function updateBall(): void
@@ -228,7 +260,7 @@ class Game
         $player->setY($player->getY() + $data['y']);
     }
 
-    private function getPlayerWithSide($side): ?Player
+    public function getPlayerWithSide($side): ?Player
     {
         foreach ($this->players as $player) {
             if ($player->getSide()->name == $side) {
