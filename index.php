@@ -29,11 +29,18 @@
         </div>
         <div class="col">
             <div class="row">
-                <div class="col-6">
+                <div class="col">
                     <button id="start">Start Game</button>
                 </div>
-                <div class="col-6">
+            </div>
+            <div class="row">
+                <div class="col">
                     <button id="stop">Stop Game</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button id="rageQuit">Rage quit</button>
                 </div>
             </div>
             <div class="row">
@@ -43,10 +50,38 @@
                     <button id="join">Join</button>
                 </div>
             </div>
+            <div class="row">
+                <div class="col myBack">
+                    <div class="player">
+                        <div class="rect green"></div>
+                        <span>LEFT: </span>
+                        <div class="name">Free</div>
+                    </div>
+                    <div class="player">
+                        <div class="rect yellow"></div>
+                        <span>RIGHT: </span>
+                        <div class="name">Free</div>
+                    </div>
+                    <div class="player">
+                        <div class="rect red"></div>
+                        <span>TOP: </span>
+                        <div class="name">Free</div>
+                    </div>
+                    <div class="player">
+                        <div class="rect blue"></div>
+                        <span>BOTTOM: </span>
+                        <div class="name">Free</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div id="score">Score: 0</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<div id="score">0</div>
 <div class="container">
     <div id="number">&nbsp;</div>
     <div id="log"></div>

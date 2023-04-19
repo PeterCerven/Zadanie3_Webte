@@ -33,6 +33,44 @@ html, body {
     padding: 5px;
 }
 
-canvas {
-    border: 1px solid black;
+
+#score {
+    font-size: 150%;
+    text-align: center;
+    padding: 5px;
+}
+
+.name {
+    display: inline-block;
+}
+
+.myBack {
+    background: lightblue;
+}
+
+.green {
+    background: green;
+}
+
+.red {
+    background: red;
+}
+
+.yellow {
+    background: yellow;
+}
+
+.blue {
+    background: blue;
+}
+
+.rect {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin: 3px 5px 0 0;
+}
+
+span {
+    display: inline-block;
 }

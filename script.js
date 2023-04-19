@@ -6,9 +6,22 @@ let ball;
 let players = [];
 let walls = [];
 let goals = [];
-
+let admin = false;
+let myName;
 let playerSide;
 
+const playerArray = document.querySelectorAll('.player');
+
+function assignName(side, name) {
+    playerArray.forEach(player => {
+        const nameElement = player.querySelector('.name');
+        const sideElement = player.querySelector('span');
+        const regex = new RegExp(`^${side}:`);
+        if (regex.test(sideElement.textContent)) {
+            nameElement.textContent = name;
+        }
+    });
+}
 
 function Wall(x, y, width, height, color) {
     this.x = x;
@@ -128,6 +141,8 @@ function init(ballProperties, playersProperties, goalsProperties, wallsPropertie
         players.push(new Player(playersProperties[i].x, playersProperties[i].y, playersProperties[i].width,
             playersProperties[i].height, playersProperties[i].color, playersProperties[i].lives, playersProperties[i].side,
             playersProperties[i].alive));
+        console.log(playersProperties[i].side, playersProperties[i].nickName);
+        assignName(playersProperties[i].side, playersProperties[i].nickName);
     }
     for (let i = 0; i < goalsProperties.length; i++) {
         goals.push(new Goal(goalsProperties[i].x, goalsProperties[i].y, goalsProperties[i].width, goalsProperties[i].height, "black", goalsProperties[i].player));
@@ -159,14 +174,19 @@ $(document).ready(function () {
         if (data.message === "reset") {
             playerSide = undefined;
             $("#join").prop("disabled", false);
+            playerArray.forEach(player => {
+                const nameElement = player.querySelector('.name');
+                nameElement.textContent = 'Free';
+            });
             return;
         }
         if (data.message === "player") {
             playerSide = data.side;
+            admin = data.isAdmin;
+            myName = data.plName;
             return;
         }
         init(data.ball, data.players, data.goals, data.walls);
-        console.log(playerSide);
         $('#score').text('Score: ' + data.score);
         if (data.gameStarted) {
             ball.update(data.ball.x, data.ball.y);
@@ -199,11 +219,15 @@ $(document).ready(function () {
     }
 
     $('#start').click(function () {
-        ws.send(JSON.stringify({message: "start"}));
+        ws.send(JSON.stringify({message: "start", admin: admin}));
     });
 
     $('#stop').click(function () {
         ws.send(JSON.stringify({message: "stop"}));
+    });
+
+    $('#rageQuit').click(function () {
+        ws.send(JSON.stringify({message: "rageQuit", playerSide: playerSide}));
     });
 
     $('#join').click(function () {

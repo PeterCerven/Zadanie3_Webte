@@ -102,7 +102,7 @@ class Game
         $this->walls[] = new Wall(450, 500, Side::BOTTOM, "black");
     }
 
-    private function wallPlayer() : void {
+    public function wallPlayer() : void {
         $this->walls = [];
         foreach ($this->players as $player) {
             if (!$player->isAlive()) {
@@ -177,6 +177,15 @@ class Game
         }
     }
 
+    private function isAnyoneAlive() : bool {
+        foreach ($this->players as $player) {
+            if ($player->isAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private function checkCollision(): void
     {
         $this->checkBounce($this->walls);
@@ -189,11 +198,21 @@ class Game
                 if ($player->getLives() == 0) {
                     $player->setAlive(false);
                     $this->wallPlayer();
+                    if (!$this->isAnyoneAlive()) {
+                        $this->gameStarted = false;
+                        return;
+                    }
                 }
             }
         }
 
     }
+
+    public function isGameOver() : bool {
+        return !$this->isAnyoneAlive();
+    }
+
+
 
 
     public function updateBall(): void

@@ -9,6 +9,7 @@ class Player
     private int $upperBound;
     private int $lowerBound;
     private bool $alive;
+    private string $nickName;
 
     public function __construct(
         private float  $x,
@@ -25,6 +26,7 @@ class Player
         $this->upperBound = 350;
         $this->lowerBound = 150;
         $this->alive = false;
+        $this->nickName = "FREE";
     }
 
 
@@ -181,6 +183,23 @@ class Player
         return $this->lives <= 0;
     }
 
+    /**
+     * @return string
+     */
+    public function getNickName(): string
+    {
+        return $this->nickName;
+    }
+
+    /**
+     * @param string $nickName
+     */
+    public function setNickName(string $nickName): void
+    {
+        $this->nickName = $nickName;
+    }
+
+
 
     public function toArray(): array
     {
@@ -195,6 +214,7 @@ class Player
             'isYou' => $this->isYou,
             'side' => $this->side->name,
             'alive' => $this->alive,
+            'nickName' => $this->nickName,
         ];
     }
 
