@@ -139,7 +139,7 @@ $ws_worker->onWorkerStart = function ($ws_worker) {
                     $GLOBALS['game']->passAdmin();
                 }
 
-                if ($GLOBALS['game']->isGameOver()) {
+                if ($GLOBALS['game']->isGameOver() || $GLOBALS['active_players'] === 0 || !$GLOBALS['gameStarted']) {
                     foreach ($GLOBALS['ws_worker']->connections as $connection2) {
                         $connection2->send(newGame());
                     }
@@ -148,7 +148,7 @@ $ws_worker->onWorkerStart = function ($ws_worker) {
                         $connection3->send(game());
                     }
                 }
-                $connection->send(json_encode(['message' => 'join']));
+                $connection->send(json_encode(['message' => 'rageQuit']));
                 break;
             case 'update':
                 foreach ($GLOBALS['ws_worker']->connections as $connection) {

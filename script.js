@@ -23,6 +23,14 @@ function assignName(side, name) {
     });
 }
 
+function assignAdmin(adminP, side) {
+    if (adminP && side === playerSide) {
+        admin = true;
+        $('#admin').text('Yes');
+        $("#start").prop("disabled", false);
+    }
+}
+
 function Wall(x, y, width, height, color) {
     this.x = x;
     this.y = y;
@@ -143,6 +151,7 @@ function init(ballProperties, playersProperties, goalsProperties, wallsPropertie
             playersProperties[i].height, playersProperties[i].color, playersProperties[i].lives, playersProperties[i].side,
             playersProperties[i].alive));
         assignName(playersProperties[i].side, playersProperties[i].nickName);
+        assignAdmin(playersProperties[i].admin, playersProperties[i].side);
         if (playersProperties[i].alive) {
             alive++;
         }
@@ -202,7 +211,7 @@ $(document).ready(function () {
                     $("#start").prop("disabled", true);
                 }
                 break;
-            case "join":
+            case "rageQuit":
                 $("#join").prop("disabled", false);
                 $('#admin').text('No');
                 break;
