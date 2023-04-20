@@ -180,48 +180,48 @@ $(document).ready(function () {
     };
     ws.onmessage = function (e) {
         let data = JSON.parse(e.data);
-        if (data.message === "reset") {
-            playerSide = undefined;
-            $("#join").prop("disabled", false);
-            $('#admin').text('No');
-            playerArray.forEach(player => {
-                const nameElement = player.querySelector('.name');
-                nameElement.textContent = 'Free';
-            });
-            return;
-        }
-        if (data.message === "player") {
-            playerSide = data.side;
-            admin = data.isAdmin;
-            if (admin) {
-                $('#admin').text('Yes');
-                $("#start").prop("disabled", false);
-            } else {
+        switch (data.message) {
+            case "reset":
+                playerSide = undefined;
+                $("#join").prop("disabled", false);
                 $('#admin').text('No');
-                $("#start").prop("disabled", true);
-            }
-            return;
+                playerArray.forEach(player => {
+                    const nameElement = player.querySelector('.name');
+                    nameElement.textContent = 'Free';
+
+                });
+                break;
+            case "player":
+                playerSide = data.side;
+                admin = data.isAdmin;
+                if (admin) {
+                    $('#admin').text('Yes');
+                    $("#start").prop("disabled", false);
+                } else {
+                    $('#admin').text('No');
+                    $("#start").prop("disabled", true);
+                }
+                break;
+            case "join":
+                $("#join").prop("disabled", false);
+                $('#admin').text('No');
+                break;
+            default:
+                init(data.ball, data.players, data.goals, data.walls);
+                $('#score').text('Score: ' + data.score);
+                if (data.gameStarted) {
+                    ball.update(data.ball.x, data.ball.y);
+                    for (let i = 0; i < data.players.length; i++) {
+                        players[i].update(data.players[i].x, data.players[i].y);
+                    }
+                }
+                updateScene();
+                break;
         }
-        if (data.message === "join") {
-            $("#join").prop("disabled", false);
-            $('#admin').text('No');
-            return;
-        }
-        init(data.ball, data.players, data.goals, data.walls);
-        $('#score').text('Score: ' + data.score);
-        if (data.gameStarted) {
-            ball.update(data.ball.x, data.ball.y);
-            for (let i = 0; i < data.players.length; i++) {
-                players[i].update(data.players[i].x, data.players[i].y);
-            }
-        }
-        updateScene();
     };
     ws.onclose = function () {
+
     }
-
-
-
 
 
     $('#start').click(function () {
@@ -243,6 +243,12 @@ $(document).ready(function () {
             name: $("#player").val()
         }
         ws.send(JSON.stringify(data));
+    });
+
+    $("#quit").click(function () {
+        console.log("Connection closed");
+        ws.close();
+        ws = null;
     });
 
     $(document).keydown(function (event) {
@@ -296,10 +302,5 @@ $(document).ready(function () {
                     break;
             }
         }
-    });
-    $("#quit").click(function () {
-        console.log("Connection closed");
-        ws.close();
-        ws = null;
     });
 });
